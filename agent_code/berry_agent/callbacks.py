@@ -2,7 +2,7 @@ import numpy as np
 import os, pickle
 import torch
 from agent_code.berry_agent.lstm import LSTMModel
-learning_rate = 0.001
+learning_rate = 0.01
 
 def setup(self):
     # print(self)
