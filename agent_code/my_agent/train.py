@@ -2,7 +2,7 @@ from collections import namedtuple, deque
 
 import torch
 
-from agent_code.berry_agent.lstm import LSTMModel
+from agent_code.my_agent.lstm import LSTMModel
 import pickle
 from typing import List
 
