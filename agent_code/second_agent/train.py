@@ -58,8 +58,8 @@ def game_events_occurred(self, old_game_state: dict, self_action: str, new_game_
 
     # state_to_features is defined in callbacks.py
     tr = Transition(state_to_features(old_game_state), self_action, state_to_features(new_game_state), reward_from_events(self, events))
-    self.logger.info(state_to_features(old_game_state))
-    self.logger.info('transition:' + str(tr))
+    self.logger.info("STATE_TO_FEATURES" + str(state_to_features(old_game_state)))
+    # self.logger.info('transition:' + str(tr))
     self.transitions.append(tr)
 
 
@@ -83,7 +83,7 @@ def end_of_round(self, last_game_state: dict, last_action: str, events: List[str
     # with open("my-saved-model.pt", "wb") as file:
     #     pickle.dump(self.model, file)
 
-    q_table[[1,2,3], 2] = 1
+    q_table[state_to_features(last_game_state)] = reward_from_events(self, events)
     with open("agent_q_table.npy", "wb") as file:
         np.save("agent_q_table.npy", q_table)
 

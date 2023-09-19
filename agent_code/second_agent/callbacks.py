@@ -34,7 +34,7 @@ def setup(self):
         self.logger.info("Loading Q-table from saved file")
         self.q_table = np.load("agent_q_table.npy")
     else:
-        self.logger.info("Q-table file not found, use random strategy")
+        self.logger.info("Q-table file not found.")
 
 
 
@@ -49,8 +49,14 @@ def act(self, game_state: dict) -> str:
     """
     # todo Exploration vs exploitation
     # self.logger.info(game_state)
-    self.logger.info(self.q_table)
 
+    # If not found agent_q_table.npy file
+    if (not hasattr(self, 'q_table')):
+        self.logger.info("q-table file not found, use random strategy instead.")
+        return np.random.choice(ACTIONS, p=[.2, .2, .2, .2, .1, .1])
+
+    # If it has agent_q_table.npy file
+    # self.logger.info(self.q_table)
     return np.random.choice(ACTIONS, p=[.2, .2, .2, .2, .1, .1])
 
 
@@ -81,34 +87,35 @@ def state_to_features(game_state: dict) -> np.array:
         # return stacked_channels.reshape(-1)
         # Extract features from the game board (field)
 
+    round_num = game_state['round']
+    step_num = game_state['step']
     field = game_state['field']
-    agent_position = game_state['self'][3]
-
-    # Define a feature vector
-    feature_vector = []
-
-    # Extract features based on agent's position
-    row, col = agent_position
-
-    # Feature 1: Number of empty tiles around the agent (up, down, left, right)
-    empty_tiles = 0
-    for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-        r, c = row + dr, col + dc
-        if 0 <= r < field.shape[0] and 0 <= c < field.shape[1] and field[r, c] == 0:
-            empty_tiles += 1
-    feature_vector.append(empty_tiles)
-
+    self_info = game_state['self']
+    other_agents = game_state['others']
     bombs = game_state['bombs']
-    bomb_nearby = any(abs(r - row) + abs(c - col) == 1 for (r, c), _ in bombs)
-    feature_vector.append(int(bomb_nearby))
-
     coins = game_state['coins']
-    coin_nearby = any(abs(r - row) + abs(c - col) == 1 for r, c in coins)
-    feature_vector.append(int(coin_nearby))
+    user_input = game_state['user_input']
 
-    agent_score = game_state['self'][1]
-    feature_vector.append(agent_score)
+    field_vector = field.flatten()
 
-    feature_vector = np.array(feature_vector, dtype=np.float32)
+    self_position = self_info[3]
+    self_vector = np.array(self_position)
+
+    other_agents_positions = [other[3] for other in other_agents]
+    other_agents_vector = np.array(other_agents_positions).flatten()
+
+    # bombs_positions = [bomb[2] for bomb in bombs]
+    # bombs_vector = np.array(bombs_positions).flatten()
+    bombs_vector = np.array([])
+
+    # coins_positions = [coin.get_state() for coin in coins]
+    # coins_vector = np.array(coins_positions).flatten()
+    coins_vector = np.array([])
+
+    user_input_vector = np.array(user_input) if user_input is not None else np.array([])
+
+    feature_vector = np.concatenate(
+        [field_vector, self_vector, other_agents_vector, bombs_vector, coins_vector, user_input_vector])
 
     return feature_vector
+
