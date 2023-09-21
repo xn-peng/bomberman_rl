@@ -10,7 +10,7 @@ import torch.nn.functional as F
 
 from scipy.special import softmax
 
-from .myfuncs import DQN
+from agent_code.my_agent.myfuncs import DQN
 
 from collections import namedtuple, deque
 Transition = namedtuple('Transition',
@@ -79,7 +79,7 @@ def setup(self):
     ##### gaming #####
     else:
         self.logger.info("Loading model from saved state.")
-        checkpoint = torch.load('my-saved-model43.tar')
+        checkpoint = torch.load('my-saved-model43.tar',map_location='cpu')
         self.model.load_state_dict(checkpoint['model_state_dict'])
         self.model.eval()
         print('load model for gaming')
