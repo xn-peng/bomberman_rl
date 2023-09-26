@@ -79,6 +79,7 @@ class Agent:
         self.shade.fill((0, 0, 0, 208))
 
         self.name = agent_name
+        print(agent_name)
         self.code_name = code_name
         self.display_name = display_name
         self.train = train
@@ -303,6 +304,7 @@ class SequentialAgentBackend(AgentBackend):
     def send_event(self, event_name, *event_args):
         prev_cwd = os.getcwd()
         os.chdir(os.path.dirname(__file__) + f'/agent_code/{self.code_name}/')
+        print(self.code_name)
         try:
             self.runner.process_event(event_name, *event_args)
         finally:
